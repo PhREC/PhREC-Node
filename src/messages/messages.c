@@ -1,4 +1,5 @@
 #include "messages.h"
+#include "Arduino.h"
 
 MessageHandler message_handlers[64] = {
     [1] = Request_Hardware_Id_Handler,
@@ -20,5 +21,13 @@ MessageHandler message_handlers[64] = {
 
 
 Message Message_Handler(Message msg) {
-    return message_handlers[msg.header.message_id](msg);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
+    MessageHandler handler = message_handlers[msg.header.message_id];
+    if(handler == 0){
+        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
+        return (Message){.raw = 0};
+    }
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_SET);
+    return handler(msg);
 }

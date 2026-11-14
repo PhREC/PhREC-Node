@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include <SimpleFOC.h>
+#include "usart.h"
+#include "messages.h"
+#include "string.h"
 
 //PWM Pins (TIM1 or IN1, IN2, IN3)
 const PinName driverPins[] = {
@@ -30,8 +33,14 @@ BLDCDriver3PWM driver = BLDCDriver3PWM(driverPins[0], driverPins[1], driverPins[
 BLDCMotor motor = BLDCMotor(7, 11.2, 140);
 
 void setup() {
+  MX_USART1_UART_Init();
+
   pinMode(PB_2, OUTPUT);
   pinMode(PB_10, OUTPUT);
+  pinMode(PB_11, OUTPUT);
+  digitalWrite(PB_11, LOW); //Turn on termination 
+
+
 
   digitalWrite(PB_2, LOW); //Turn on RED led
   digitalWrite(PB_10, HIGH); //Turn off WHITE led 
@@ -61,12 +70,22 @@ void setup() {
 
 }
 
+uint8_t g_n = 0;
+uint8_t g_test[] = "This is a test";
 void loop() {
 
   //sensor.update();
   motor.loopFOC();
+  // Message m = Request_Hardware_Id_Handler((Message){.raw=0xffffffff});
+  
 
-  motor.move(10.0);
+  // HAL_UART_Transmit(&huart1, g_test, sizeof(g_test), 25); 
+
+  uint32_t m = 0x0;
+  HAL_UART_Transmit(&huart1,reinterpret_cast<uint8_t*>(&m), sizeof(m), 25); 
+  // HAL_UART_Transmit(&huart1, &g_n, 1, 25); 
+  //g_n--;
+  // motor.move(10.0);
 }
 
 #ifdef __cplusplus

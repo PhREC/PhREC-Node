@@ -21,6 +21,14 @@
 
 extern UART_HandleTypeDef huart1;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void MX_USART1_UART_Init(void);
 void UART_RxCpltCallback(UART_HandleTypeDef *huart);
+
+#ifdef __cplusplus
+}
+#endif
+

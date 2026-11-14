@@ -20,6 +20,10 @@
 #define MSG_RESP_SENSOR_DATA 0b110101
 #define MSG_RESP_SENSOR_STREAM_HEADER 0b111000
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //Request Messages
 typedef struct {
     uint32_t message_id : 6;
@@ -180,3 +184,8 @@ Message Request_Sensor_Depth_Response_Handler(Message msg);
 Message Request_Sensor_Data_Response_Handler(Message msg);
 Message Request_Sensor_Data_Stream_Response_Handler(Message msg);
 Message Request_Motor_Impulse_Response_Handler(Message msg);
+
+
+#ifdef __cplusplus
+}
+#endif
