@@ -3,9 +3,9 @@
 
 #define MSG_RESERVED_EMPTY 0b000000
 #define MSG_REQ_HARDWARE_ID 0b000001
-#define MSG_ASSIGN_NODE_ID 0b000010
-#define MSG_VALIDATE_NODE_IDS 0b000011
-#define MSG_RANDOMIZE_NODE_IDS 0b000100
+#define MSG_REQ_ASSIGN_NODE_ID 0b000010
+#define MSG_REQ_VALIDATE_NODE_IDS 0b000011
+#define MSG_REQ_RANDOMIZE_NODE_IDS 0b000100
 #define MSG_REQ_SENSOR_DEPTH 0b000101
 #define MSG_REQ_SENSOR_DATA 0b001010
 #define MSG_REQ_SENSOR_DATA_STREAM 0b001011
@@ -133,14 +133,12 @@ typedef struct {
 typedef union {
     uint32_t raw;
 
-    struct{
-        uint32_t message_id : 6;
-    } header;
+    uint32_t message_id : 6;
 
     //First 24 bits of our message, useful for crc-8 calculation
-    struct{
-        uint8_t data[3];
-    } body;
+    uint8_t body[3];
+
+    uint8_t bytes[4];
 
     //Request Messages
     RequestHardwareId requestHardwareId;

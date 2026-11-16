@@ -37,8 +37,8 @@ SensorDataResponse MT6701_I2C::getData() {
     byte b = Wire.read();
 
     Message msg;
-    msg.sensorDataResponse.message_id = -13; // Defined in messages.md
+    msg.sensorDataResponse.message_id = MSG_RESP_SENSOR_DATA;
     msg.sensorDataResponse.sensor_data = (a << 6) | (b >> 2); // Combine the two bytes of angle data
-    msg.sensorDataResponse.crc8 = crc8(msg.body.data, sizeof(msg.body));
+    msg.sensorDataResponse.crc8 = crc8(msg.body, sizeof(msg.body));
     return msg.sensorDataResponse;
 }

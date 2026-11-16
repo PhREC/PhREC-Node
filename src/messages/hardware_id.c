@@ -14,10 +14,10 @@ Message Request_Hardware_Id_Handler(Message msg){
 
     uint16_t crc = crc16(uid_bytes, 12);
 
-    Message response;
-    response.hardwareIdResponse.message_id = 63 - 1;
+    Message response = {0};
+    response.hardwareIdResponse.message_id = MSG_RESP_HARDWARE_ID;
     response.hardwareIdResponse.hw_id = crc;
-    response.hardwareIdResponse.crc8 = crc8(response.body.data, sizeof(response.body));
+    response.hardwareIdResponse.crc8 = crc8(response.body, sizeof(response.body));
     return response;
 }
 

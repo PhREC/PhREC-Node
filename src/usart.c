@@ -25,9 +25,11 @@ UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
+uint8_t rx_buff[4];
+
 void MX_USART1_UART_Init(void){
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -43,6 +45,8 @@ void MX_USART1_UART_Init(void){
 
   HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
+  
+  HAL_UART_RegisterCallback(&huart1, HAL_UART_RX_COMPLETE_CB_ID, UART_RxCpltCallback);
 }
 
 void USART1_IRQHandler(void){
@@ -84,7 +88,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle){
       Error_Handler();
     }
 
-    HAL_UART_RegisterCallback(uartHandle, HAL_UART_RX_COMPLETE_CB_ID, UART_RxCpltCallback);
     __HAL_DMA_REMAP_CHANNEL_ENABLE(DMA_REMAP_USART1_RX_DMA_CH5);
 
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart1_rx);
@@ -133,13 +136,36 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle){
 void UART_RxCpltCallback(UART_HandleTypeDef *huart){
   // Execution enters here when DMA buffer is 100% full
 
-  //pRxBuffPtr is a 8-byte buffer
-  //Since we are receiving 4 bytes at a time, we need to subtract 4 from the buffer pointer
+  // TODO :: USE LIGHTS TO DENOTE MESSAGE STATUS
+  // RED : RECEIVING
+  // WHITE : SENDING
+  // RED + WHITE : WAITING
+  // I ONLY HAVE 2 LED RN LOL
+
   Message message;
-  memcpy(&message.raw, huart->pRxBuffPtr, sizeof(message));
+  memcpy(&message.raw, rx_buff, sizeof(message));
+
+  if(message.raw == MSG_RESERVED_EMPTY){ // We recieved an empty message
+    HAL_UART_Receive_DMA(huart, rx_buff, sizeof(uint32_t));
+    return;
+  }
+
+  // TODO :: Check the CRC and see if its for us (xor ID or broadcast)
+
   // Handle Message Protocol
-  Message_Handler(message);
+  Message nmessage = Message_Handler(message);
+
+  // TODO :: Implement a soft delay here
+  // Non blocking using a one shot timer interrupt with our wait time calculated here
+
+  // We want to use the blocking version of transmit
+  // There is nothing else we want to do while transmitting anyways
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
+
+  HAL_UART_Transmit(huart, nmessage.bytes, sizeof(Message), 20);
 
   //Restart DMA receive
-  HAL_UART_Receive_DMA(huart, huart->pRxBuffPtr, sizeof(uint32_t));
+  HAL_UART_Receive_IT(huart, rx_buff, sizeof(uint32_t));
 }

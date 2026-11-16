@@ -70,9 +70,12 @@ void setup() {
   motor.controller =  MotionControlType::velocity_openloop;
   motor.voltage_limit = 12;
 
+  volatile HAL_StatusTypeDef s;
+  s = HAL_UART_Receive_IT(&huart1, rx_buff, sizeof(Message));
+
+
   motor.init();
   motor.initFOC();
-  huart1.pRxBuffPtr = new uint8_t[4];
 }
 
 uint8_t g_n = 0;
@@ -81,13 +84,12 @@ void loop() {
 
   //sensor.update();
   motor.loopFOC();
-  //volatile HAL_StatusTypeDef s;
-  //s = HAL_UART_Receive(&huart1,huart1.pRxBuffPtr, sizeof(Message), 20000);
+  
 
-  Message m = Request_Hardware_Id_Handler((Message){.raw=0xffffffff});
-  HAL_UART_Transmit(&huart1,reinterpret_cast<uint8_t*>(&m), sizeof(m), 25); 
+  //Message m = Request_Hardware_Id_Handler((Message){.raw=0xffffffff});
+  //HAL_UART_Transmit(&huart1,reinterpret_cast<uint8_t*>(&m), sizeof(m), 25); 
   //HAL_UART_Transmit(&huart1, &g_n, 1, 25); 
-  //  g_n--;
+    g_n--;
   // motor.move(10.0);
 }
 

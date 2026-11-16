@@ -22,6 +22,7 @@
 extern UART_HandleTypeDef huart1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
+extern uint8_t rx_buff[4];
 
 #ifdef __cplusplus
 extern "C" {
