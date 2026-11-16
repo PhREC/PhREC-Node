@@ -1,8 +1,10 @@
 #include <Arduino.h>
 #include <SimpleFOC.h>
+#include "dma.h"
 #include "usart.h"
 #include "messages.h"
 #include "string.h"
+
 
 //PWM Pins (TIM1 or IN1, IN2, IN3)
 const PinName driverPins[] = {
@@ -33,6 +35,7 @@ BLDCDriver3PWM driver = BLDCDriver3PWM(driverPins[0], driverPins[1], driverPins[
 BLDCMotor motor = BLDCMotor(7, 11.2, 140);
 
 void setup() {
+  MX_DMA_Init();
   MX_USART1_UART_Init();
 
   pinMode(PB_2, OUTPUT);
@@ -46,10 +49,12 @@ void setup() {
   digitalWrite(PB_10, HIGH); //Turn off WHITE led 
   delay(1000);
 
+
+  // huart1.pRxBuffPtr = new uint8_t[4];
+  // HAL_UART_Receive_DMA(&huart1, huart1.pRxBuffPtr, sizeof(Message));
   digitalWrite(PB_2, HIGH); //Turn off RED led
   digitalWrite(PB_10, LOW); //Turn on WHITE led 
   delay(1000);
-
 
   //sensor.spi_mode = SPI_MODE2;
   //sensor.clock_speed = 1000000;
@@ -67,7 +72,7 @@ void setup() {
 
   motor.init();
   motor.initFOC();
-
+  huart1.pRxBuffPtr = new uint8_t[4];
 }
 
 uint8_t g_n = 0;
@@ -76,15 +81,13 @@ void loop() {
 
   //sensor.update();
   motor.loopFOC();
-  // Message m = Request_Hardware_Id_Handler((Message){.raw=0xffffffff});
-  
+  //volatile HAL_StatusTypeDef s;
+  //s = HAL_UART_Receive(&huart1,huart1.pRxBuffPtr, sizeof(Message), 20000);
 
-  // HAL_UART_Transmit(&huart1, g_test, sizeof(g_test), 25); 
-
-  uint32_t m = 0x0;
+  Message m = Request_Hardware_Id_Handler((Message){.raw=0xffffffff});
   HAL_UART_Transmit(&huart1,reinterpret_cast<uint8_t*>(&m), sizeof(m), 25); 
-  // HAL_UART_Transmit(&huart1, &g_n, 1, 25); 
-  //g_n--;
+  //HAL_UART_Transmit(&huart1, &g_n, 1, 25); 
+  //  g_n--;
   // motor.move(10.0);
 }
 

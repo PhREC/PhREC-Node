@@ -40,6 +40,13 @@ void MX_USART1_UART_Init(void){
   {
     Error_Handler();
   }
+
+  HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(USART1_IRQn);
+}
+
+void USART1_IRQHandler(void){
+  HAL_UART_IRQHandler(&huart1);
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle){
@@ -95,6 +102,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle){
     {
       Error_Handler();
     }
+    // HAL_UART_RegisterCallback(uartHandle, HAL_UART_RX_COMPLETE_CB_ID, UART_RxCpltCallback);
+
 
     __HAL_DMA_REMAP_CHANNEL_ENABLE(DMA_REMAP_USART1_TX_DMA_CH4);
 
@@ -124,17 +133,13 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle){
 void UART_RxCpltCallback(UART_HandleTypeDef *huart){
   // Execution enters here when DMA buffer is 100% full
 
-  // Handle Message Protocol
-  uint8_t *pRxBuffPtr = huart->pRxBuffPtr - 4;
-
   //pRxBuffPtr is a 8-byte buffer
   //Since we are receiving 4 bytes at a time, we need to subtract 4 from the buffer pointer
   Message message;
-  message.raw = *(uint32_t*)pRxBuffPtr;
-
+  memcpy(&message.raw, huart->pRxBuffPtr, sizeof(message));
   // Handle Message Protocol
   Message_Handler(message);
 
   //Restart DMA receive
-  HAL_UART_Receive_DMA(huart, pRxBuffPtr, sizeof(uint32_t));
+  HAL_UART_Receive_DMA(huart, huart->pRxBuffPtr, sizeof(uint32_t));
 }

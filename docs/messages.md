@@ -30,7 +30,7 @@ $$ \text{Bits Per Frame} = \text{Start Bit} + \text{Data Bits} + \text{Parity Bi
 
 $$ \text{Frame Time} = \frac{\text{Bits Per Frame}}{\text{Baud Rate}} $$
 
-$$ \text{Wait Time} = \text{Node ID} \times \text{Frame Time} \times \text{Response Message Size}$$
+$$ \text{Wait Time} = \text{Node ID} \times \text{Frame Time} \times \text{Response Message Size (bytes)} + \text{Buffer Time}$$
 
 ### Example 1: Standard Message (Sensor Depth Request)
 
@@ -39,18 +39,18 @@ $$ \text{Wait Time} = \text{Node ID} \times \text{Frame Time} \times \text{Respo
 **Configuration:**
 - Baud Rate: 115200 bps
 - UART Frame: 1 start + 8 data + 0 parity + 0.5 stop = 9.5 bits per frame
-- Response Message Size: 32 bits (4 bytes)
+- Response Message Size: 32 bits + 6 bits (4 frames)
 
 **Calculation:**
 $$\text{Frame Time} = \frac{9.5 \text{ bits}}{115200 \text{ bps}} = 0.0824 \text{ ms}$$
 
-**Wait Times by Node ID:**
-- Node 1: `1 × 0.0824 ms × 32 bits = 2.64 ms`
-- Node 2: `2 × 0.0824 ms × 32 bits = 5.28 ms`
-- Node 3: `3 × 0.0824 ms × 32 bits = 7.92 ms`
-- Node 5: `5 × 0.0824 ms × 32 bits = 13.19 ms`
+**Wait Times by Node ID: (0 buffer time)**
+- Node 1: `1 × 0.0824 ms × 4 frames = 0.3296 ms`
+- Node 2: `2 × 0.0824 ms × 4 frames = 0.6592 ms`
+- Node 3: `3 × 0.0824 ms × 4 frames = 0.9888 ms`
+- Node 5: `5 × 0.0824 ms × 4 frames = 1.3184 ms`
 
-This ensures each node's response is separated by ~2.64 ms, preventing collisions.
+This ensures each node's response is separated by ~0.3296 ms, preventing collisions.
 
 ## Requests
 

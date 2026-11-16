@@ -20,6 +20,8 @@
 #include <Arduino.h>
 
 extern UART_HandleTypeDef huart1;
+extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart1_tx;
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +29,7 @@ extern "C" {
 
 void MX_USART1_UART_Init(void);
 void UART_RxCpltCallback(UART_HandleTypeDef *huart);
+void USART1_IRQHandler(void);
 
 #ifdef __cplusplus
 }
