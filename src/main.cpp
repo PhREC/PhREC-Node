@@ -60,36 +60,24 @@ void setup() {
   //sensor.clock_speed = 1000000;
   //sensor.init();
 
-  driver.voltage_power_supply = 12;
-  driver.voltage_limit = 12;
-  driver.init();
+  //driver.voltage_power_supply = 12;
+  //driver.voltage_limit = 12;
+  //driver.init();
 
   //motor.linkSensor(&sensor);
-  motor.linkDriver(&driver);
+  //motor.linkDriver(&driver);
 
-  motor.controller =  MotionControlType::velocity_openloop;
-  motor.voltage_limit = 12;
+  //motor.controller =  MotionControlType::velocity_openloop;
+  //motor.voltage_limit = 12;
 
-  volatile HAL_StatusTypeDef s;
-  s = HAL_UART_Receive_IT(&huart1, rx_buff, sizeof(Message));
+  //motor.init();
+  //motor.initFOC();
 
-
-  motor.init();
-  motor.initFOC();
+  HAL_UART_Receive_DMA(&huart1, rx_buff, sizeof(Message));
 }
 
-uint8_t g_n = 0;
-uint8_t g_test[] = "This is a test";
 void loop() {
-
-  //sensor.update();
-  motor.loopFOC();
-  
-
-  //Message m = Request_Hardware_Id_Handler((Message){.raw=0xffffffff});
-  //HAL_UART_Transmit(&huart1,reinterpret_cast<uint8_t*>(&m), sizeof(m), 25); 
-  //HAL_UART_Transmit(&huart1, &g_n, 1, 25); 
-    g_n--;
+  //motor.loopFOC();
   // motor.move(10.0);
 }
 

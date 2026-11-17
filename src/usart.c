@@ -161,11 +161,13 @@ void UART_RxCpltCallback(UART_HandleTypeDef *huart){
   // We want to use the blocking version of transmit
   // There is nothing else we want to do while transmitting anyways
 
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
 
+  //Use blocking method so we dont do anything else
   HAL_UART_Transmit(huart, nmessage.bytes, sizeof(Message), 20);
 
   //Restart DMA receive
-  HAL_UART_Receive_IT(huart, rx_buff, sizeof(uint32_t));
+  HAL_UART_Receive_DMA(huart, rx_buff, sizeof(Message));
+  NULL;
 }
