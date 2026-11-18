@@ -21,7 +21,7 @@ MessageHandler message_handlers[64] = {
 
 
 Message Message_Handler(Message msg) {
-    MessageHandler handler = message_handlers[msg.message_id];
+    MessageHandler handler = message_handlers[msg.id];
     if(handler == 0){ // We recieved a msg without an associated handler
         return (Message){.raw = 0};
     }
