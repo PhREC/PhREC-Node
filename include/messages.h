@@ -32,65 +32,55 @@ typedef struct {
     uint32_t id : 6;
     uint32_t config : 2;
     uint32_t undefined : 16;
-    uint32_t crc8 : 8;
 } RequestHardwareId;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t hw_id : 16;
     uint32_t checksum : 2;
-    uint32_t crc8 : 8;
 } AssignNodeId;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t undefined : 18;
-    uint32_t crc8 : 8;
 } ValidateNodeIds;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t config : 2;
     uint32_t undefined : 16;
-    uint32_t crc8 : 8;
 } RandomizeNodeIds;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t undefined : 18;
-    uint32_t crc8 : 8;
 } RequestSensorDepth;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t undefined : 18;
-    uint32_t crc8 : 8;
 } RequestIgnoreNMessages;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t sensor_depth : 8;
     uint32_t undefined : 10;
-    uint32_t crc8 : 8;
 } RequestSensorData;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t sensor_depth : 8;
     uint32_t undefined : 10;
-    uint32_t crc8 : 8;
 } RequestSensorDataStream;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t motor_strength : 18;
-    uint32_t crc8 : 8;
 } RequestMotorImpulse;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t undefined : 18;
-    uint32_t crc8 : 8;
 } RequestFirmwareBlindUpload;
 
 
@@ -100,47 +90,40 @@ typedef struct {
     uint32_t id : 6;
     uint32_t hw_id : 16;
     uint32_t undefined : 2;
-    uint32_t crc8 : 8;
 } HardwareIdResponse;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t random_val : 10;
     uint32_t node_id : 8;
-    uint32_t crc8 : 8;
 } ValidateNodeIdResponse;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t random_val : 10;
     uint32_t node_id : 8;
-    uint32_t crc8 : 8;
 } RandomizedNodeIdResponse;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t sensor_depth : 8;
     uint32_t undefined : 10;
-    uint32_t crc8 : 8;
 } SensorDepthResponse;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t sensor_data : 18;
-    uint32_t crc8 : 8;
 } SensorDataResponse;
 
 typedef struct {
     uint32_t id : 6;
     uint32_t sensor_count : 4;
     uint32_t undefined : 14;
-    uint32_t crc8 : 8;
 } SensorStreamHeader;
 
 typedef struct {
     uint32_t sensor_id : 4;
     uint32_t sensor_data : 20;
-    uint32_t crc8 : 8;
 } SensorStreamData;
 
 //Basic Message Structure
@@ -154,6 +137,7 @@ typedef union {
     uint8_t body[3];
 
     uint8_t bytes[4];
+    //crc8 is always bytes[3]
 
     //Request Messages
     RequestHardwareId requestHardwareId;
