@@ -29,7 +29,7 @@ uint8_t rx_buff[4];
 
 void MX_USART1_UART_Init(void){
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 580000;
+  huart1.Init.BaudRate = BAUD_RATE;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -155,6 +155,11 @@ void UART_RxCpltCallback(UART_HandleTypeDef *huart){
   // Handle Message Protocol
   Message nmessage = Message_Handler(message);
 
+  if(nmessage.raw == 0){
+    //Wasnt a valid message
+    HAL_UART_Receive_DMA(huart, rx_buff, sizeof(Message));
+  }
+
   // TODO :: Implement a soft delay here
   // Non blocking using a one shot timer interrupt with our wait time calculated here
 
@@ -164,10 +169,12 @@ void UART_RxCpltCallback(UART_HandleTypeDef *huart){
   //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
   //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
 
+  //TODO :: ADD A NON BLOCKING WAIT
+  //We want to still be able to recieve messages while we wait to send
+  //WAIT FRAME_SIZE / BAUD * MESSAGE_SIZE + BUFFER BYTE COUNT / BAUD
   //Use blocking method so we dont do anything else
-  HAL_UART_Transmit(huart, nmessage.bytes, sizeof(Message), 20);
+  HAL_UART_Transmit(huart, nmessage.bytes, sizeof(Message), 1);
 
   //Restart DMA receive
   HAL_UART_Receive_DMA(huart, rx_buff, sizeof(Message));
-  NULL;
 }

@@ -3,7 +3,7 @@
 
 MessageHandler message_handlers[64] = {
     [1] = Request_Hardware_Id_Handler,
-    // [63 - 1] = Hardware_Id_Response_Handler,
+    [63 - 1] = Hardware_Id_Response_Handler,
     [2] = Assign_Node_Id_Handler,
     // [63 - 2] = Assign_Node_Id_Response_Handler,
     // [3] = Validate_Node_Ids_Handler,
@@ -21,6 +21,17 @@ MessageHandler message_handlers[64] = {
 
 
 Message Message_Handler(Message msg) {
+
+    if(USE_RS485){ //In CAN mode we dont need to do the CRC check
+        // We failed our first CRC check
+        if(crc8(msg.body, sizeof(msg.body)) != msg.bytes[3]){
+            // We failed our second CRC check
+            if(crc8(msg.body, sizeof(msg.body)) != msg.bytes[3] ^ node_id){
+                return (Message){.raw = 0};
+            }
+        }
+    }
+
     MessageHandler handler = message_handlers[msg.id];
     if(handler == 0){ // We recieved a msg without an associated handler
         return (Message){.raw = 0};

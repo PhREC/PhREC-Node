@@ -23,6 +23,29 @@
 #define MSG_RESP_SENSOR_DATA 53
 #define MSG_RESP_SENSOR_STREAM_HEADER 52
 
+static inline int8_t node_id = 0;
+
+#ifndef BAUD_RATE
+#define BAUD_RATE 580000
+#endif
+#define FRAME_SIZE 10
+
+#if defined(USE_CAN) && (USE_CAN + 0 != 0)
+    #undef USE_RS485
+    #undef USE_CAN
+    #define USE_CAN 1
+    #define USE_RS485 0
+#elif defined(USE_RS485) && (USE_RS485 + 0 != 0)
+    #undef USE_RS485
+    #undef USE_CAN
+    #define USE_RS485 1
+    #define USE_CAN 0
+#else
+    #define USE_RS485 1
+    #define USE_CAN 0
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
