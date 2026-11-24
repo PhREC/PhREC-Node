@@ -23,7 +23,8 @@
 #define MSG_RESP_SENSOR_DATA 53
 #define MSG_RESP_SENSOR_STREAM_HEADER 52
 
-static inline int8_t node_id = 0;
+static inline uint8_t lock_node_id = 0;
+static inline uint8_t node_id = 0;
 
 #ifndef BAUD_RATE
 #define BAUD_RATE 580000
@@ -117,6 +118,12 @@ typedef struct {
 
 typedef struct {
     uint32_t id : 6;
+    uint32_t assigned_node_id : 8;
+} AssignedNodeIdResponse;
+
+
+typedef struct {
+    uint32_t id : 6;
     uint32_t random_val : 10;
     uint32_t node_id : 8;
 } ValidateNodeIdResponse;
@@ -177,6 +184,7 @@ typedef union {
 
     //Response Messages
     HardwareIdResponse hardwareIdResponse;
+    AssignedNodeIdResponse assignedNodeIdResponse;
     SensorDepthResponse sensorDepthResponse;
     SensorDataResponse sensorDataResponse;
     ValidateNodeIdResponse validateNodeIdResponse;

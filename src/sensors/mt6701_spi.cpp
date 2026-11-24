@@ -54,7 +54,6 @@ SensorDataResponse MT6701_SPI::getData() {
     Message msg;
     msg.sensorDataResponse.id = MSG_RESP_SENSOR_DATA;
     msg.sensorDataResponse.sensor_data = (a << 6) | (b >> 2); // Combine the two bytes of angle data
-    msg.sensorDataResponse.crc8 = crc8(msg.body, sizeof(msg.body));
 
     digitalWrite(nss_pin, HIGH);
     SPI.endTransaction();

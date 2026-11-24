@@ -133,6 +133,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle){
   }
 }
 
+//
+void Transmit_Delay(UART_HandleTypeDef *huart, uint8_t data, int size, int delay){  
+  //HAL_UART_Transmit(huart, data, size, 1);
+}
+
 void UART_RxCpltCallback(UART_HandleTypeDef *huart){
   // Execution enters here when DMA buffer is 100% full
 
@@ -168,12 +173,12 @@ void UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
   //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
   //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
-
   //TODO :: ADD A NON BLOCKING WAIT
   //We want to still be able to recieve messages while we wait to send
   //WAIT FRAME_SIZE / BAUD * MESSAGE_SIZE + BUFFER BYTE COUNT / BAUD
   //Use blocking method so we dont do anything else
-  HAL_UART_Transmit(huart, nmessage.bytes, sizeof(Message), 1);
+  int delay = 0;
+  Transmit_Delay(huart, nmessage.bytes, sizeof(nmessage), delay);
 
   //Restart DMA receive
   HAL_UART_Receive_DMA(huart, rx_buff, sizeof(Message));
