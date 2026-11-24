@@ -2,6 +2,10 @@
 #include <stdint.h>
 #include "utils/crc.h"
 
+#ifdef __cplusplus
+#include <set>
+#endif
+
 #define MSG_RESERVED_EMPTY 0
 #define MSG_REQ_HARDWARE_ID 1
 #define MSG_REQ_ASSIGN_NODE_ID 2
@@ -23,8 +27,14 @@
 #define MSG_RESP_SENSOR_DATA 53
 #define MSG_RESP_SENSOR_STREAM_HEADER 52
 
-static inline uint8_t lock_node_id = 0;
-static inline uint8_t node_id = 0;
+
+#ifdef __cplusplus
+static std::set<uint16_t> hw_ids = {};
+static inline bool lock_node_id = true;
+#endif
+
+static uint16_t hw_id;
+static uint8_t node_id = 0;
 
 #ifndef BAUD_RATE
 #define BAUD_RATE 580000
@@ -82,7 +92,7 @@ typedef struct {
 
 typedef struct {
     uint32_t id : 6;
-    uint32_t undefined : 18;
+    uint32_t count : 18;
 } RequestIgnoreNMessages;
 
 typedef struct {
@@ -119,6 +129,7 @@ typedef struct {
 typedef struct {
     uint32_t id : 6;
     uint32_t assigned_node_id : 8;
+    uint32_t success : 10;
 } AssignedNodeIdResponse;
 
 
@@ -179,6 +190,7 @@ typedef union {
     RequestIgnoreNMessages requestIgnoreNMessages;
     RequestSensorData requestSensorData;
     RequestSensorDataStream requestSensorDataStream;
+
     RequestMotorImpulse requestMotorImpulse;
     RequestFirmwareBlindUpload requestFirmwareBlindUpload;
 
@@ -202,18 +214,20 @@ Message Assign_Node_Id_Handler(Message msg);
 Message Validate_Node_Ids_Handler(Message msg);
 Message Randomize_Node_Ids_Handler(Message msg);
 Message Request_Sensor_Depth_Handler(Message msg);
+Message Request_Ignore_N_Messages_Hander(Message msg);
 Message Request_Sensor_Data_Handler(Message msg);
-Message Request_Sensor_Data_Stream_Handler(Message msg);
+Message Request_Sensor_Data_Stream_Header_Handler(Message msg);
 Message Request_Motor_Impulse_Handler(Message msg);
 
 Message Hardware_Id_Response_Handler(Message msg);
 Message Assign_Node_Id_Response_Handler(Message msg);
 Message Validate_Node_Ids_Response_Handler(Message msg);
 Message Randomize_Node_Ids_Response_Handler(Message msg);
-Message Request_Sensor_Depth_Response_Handler(Message msg);
-Message Request_Sensor_Data_Response_Handler(Message msg);
-Message Request_Sensor_Data_Stream_Response_Handler(Message msg);
-Message Request_Motor_Impulse_Response_Handler(Message msg);
+Message Response_Sensor_Depth_Handler(Message msg);
+Message Response_Sensor_Data_Handler(Message msg);
+Message Response_Sensor_Data_Stream_Header_Handler(Message msg);
+Message Response_Sensor_Data_Stream_Data_Handler(Message msg);
+Message Response_Motor_Impulse_Handler(Message msg);
 
 
 #ifdef __cplusplus

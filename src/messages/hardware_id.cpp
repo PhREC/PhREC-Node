@@ -5,11 +5,10 @@
 #include <Arduino.h>
 
 static uint8_t g_config = 0;
-static uint16_t hw_ids[255] = {};
-static uint16_t hw_id;
 
 void Hardware_Id_Init(void) {
-    hw_id = hw_ids[0] = ShortHWID();
+    hw_id = ShortHWID();
+    hw_ids.insert(hw_id);
 }
 
 int compare(const void *a, const void *b) {
@@ -32,11 +31,14 @@ Message Hardware_Id_Response_Handler(Message msg){
     //Keep a sorted list of all hw_ids
 
     //Alternatively we can use a for loop and a counter to fugure out our ID
-
+    // hw_ids[254] = msg.hardwareIdResponse.hw_id;
     //Speed doesn't matter here tbh
-    qsort(hw_ids, 255, sizeof(uint16_t), compare);
+    //qsort(hw_ids, 255, sizeof(uint16_t), compare);
+    hw_ids.insert(msg.hardwareIdResponse.hw_id);
+
+    node_id = std::distance(hw_ids.begin(), hw_ids.find(hw_id));
     // Our node ID is simply the ordered index of our SHWID in the array
-    node_id = (uint16_t*)bsearch(&hw_id, hw_ids, 255, sizeof(uint16_t), compare) - hw_ids;
+    //node_id = (uint16_t*)bsearch(&hw_id, hw_ids, 255, sizeof(uint16_t), compare) - hw_ids;
     
     //We dont wanna respond to this message, just return an invalid message
     return (Message){.raw = 0};
